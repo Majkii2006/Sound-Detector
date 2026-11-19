@@ -18,10 +18,6 @@ A DHT11 sensor provides **ambient temperature compensation** of the speed of sou
 - [Wiring](#wiring)
 - [Software architecture](#software-architecture)
 - [Building and flashing](#building-and-flashing)
-- [Design decisions](#design-decisions)
-- [Known issues and lessons learned](#known-issues-and-lessons-learned)
-- [Limitations](#limitations)
-- [Roadmap](#roadmap)
 - [References](#references)
 
 ---
