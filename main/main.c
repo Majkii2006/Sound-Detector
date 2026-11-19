@@ -24,33 +24,28 @@
 #define QUEUE_LENGTH 2
 #define TEMP_UNIT 'C'
 
-QueueHandle_t dht11_queue;
 
-
-typedef struct {
-	int16_t temperature; 
-} SensorRead;
 
 void readSensorDHT11(void* params) {
-	SensorRead read;
 	gpio_reset_pin(DHT_PIN);
-	vTaskDelay(pdMS_TO_TICKS(1000));
+	int16_t temp = 0;
 	while (1) {
-		esp_err_t res = dht_read_data(DHT_TYPE, DHT_PIN, NULL, &read.temperature);
+		vTaskDelay(pdMS_TO_TICKS(5000));
+		esp_err_t res = dht_read_data(DHT_TYPE, DHT_PIN, NULL, &temp);
 		if (res != ESP_OK) {
 			printf("There was a PROBLEM with reading sensor. Retrying...\n");	
 		}
-		xQueueSend(dht11_queue, &res, pdMS_TO_TICKS(1000));
-
-
+		printf("Actual Temperature: %d \n", temp / 10); //DHT11 answer is times 10 so need to divide it	
 	}
 }
 
 
+
+
 void app_main(void) {
 
-	xQueueCreate(QUEUE_LENGTH, sizeof(int16_t));
-
+	xTaskCreate(readSensorDHT11, "Read Temperature", 1024, NULL, 10, NULL);
+	
 	i2s_chan_handle_t rx_i2s0;
 	i2s_chan_handle_t rx_i2s1;
 	i2s_chan_config_t chan_cfg0 = I2S_CHANNEL_DEFAULT_CONFIG(I2S_NUM_0, I2S_ROLE_MASTER); //mic1 + mic2 
@@ -112,8 +107,6 @@ void app_main(void) {
 		esp_err_t read_i2s0 = i2s_channel_read(rx_i2s0, buffer_i2s0, sizeof(int32_t) * SAMPLES * 2, &bytes_read_i2s0, portMAX_DELAY);	
 		esp_err_t read_i2s1 = i2s_channel_read(rx_i2s1, buffer_i2s1, sizeof(int32_t) * SAMPLES * 2, &bytes_read_i2s1, portMAX_DELAY);
 		
-		SensorRead read;
-		xQueueReceive(dht11_queue, &read.temperature, pdMS_TO_TICKS(1000));
 
 		if (read_i2s0 != ESP_OK) {
 			ESP_LOGW("MIC", "Error with read from trunk line (i2s0)");
