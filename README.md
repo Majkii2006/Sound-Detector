@@ -115,8 +115,6 @@ Both microphones transmit in the **left** I2S slot (`L/R` tied to GND). Each has
 
 Spacing is chosen as a trade-off (see [Design decisions](#design-decisions)). Microphone positions are measured between **acoustic ports** (the hole in the PCB), not module edges, to ±1 mm; the exact coordinates are what the software uses, so the shape does not need to be perfect, only known.
 
-```
-
 ### I2S configuration
 
 | Parameter | Value | Reason |
